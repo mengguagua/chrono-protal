@@ -475,18 +475,6 @@
 
 .utterancesHost {
   min-height: 14rem;
-  overflow: hidden;
-}
-
-.utterancesHost :global(.utterances) {
-  max-width: 100%;
-  margin-top: 0.5rem;
-}
-
-.utterancesHost :global(.utterances-frame) {
-  width: 100%;
-  color-scheme: dark;
-  border-radius: 0.45rem;
 }
 
 .commentsPlaceholder {
