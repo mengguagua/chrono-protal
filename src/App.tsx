@@ -1,6 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './App.module.css';
-import { assets, defaultLocale, isLocale, links, localeLabels, locales, messages, type Locale } from './content';
+import {
+  assets,
+  defaultLocale,
+  galleryMonsterLabels,
+  galleryRelicLabels,
+  isLocale,
+  links,
+  localeLabels,
+  locales,
+  messages,
+  type Locale,
+} from './content';
 
 const storageKey = 'chrono-locale';
 const isGitHubRepoConfigured = links.githubIssuesRepo.trim().length > 0;
@@ -28,8 +39,16 @@ function App() {
   const galleryItems = useMemo(
     () => [
       ...assets.gallery.scenes.map((image) => ({ image, label: t.gallery.items[0], type: 'scene' })),
-      ...assets.gallery.monsters.map((image) => ({ image, label: t.gallery.items[1], type: 'monster' })),
-      ...assets.gallery.relics.map((image) => ({ image, label: t.gallery.items[2], type: 'relic' })),
+      ...assets.gallery.monsters.map((image) => ({
+        image,
+        label: galleryMonsterLabels[image] ?? t.gallery.items[1],
+        type: 'monster',
+      })),
+      ...assets.gallery.relics.map((image) => ({
+        image,
+        label: galleryRelicLabels[image] ?? t.gallery.items[2],
+        type: 'relic',
+      })),
     ],
     [t.gallery.items],
   );
