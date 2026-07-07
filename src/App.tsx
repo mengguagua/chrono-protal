@@ -33,7 +33,7 @@ function App() {
   const commentsRef = useRef<HTMLDivElement | null>(null);
   const galleryRef = useRef<HTMLDivElement | null>(null);
   const galleryPausedRef = useRef(false);
-  const galleryDragRef = useRef({ active: false, startX: 0, startScrollLeft: 0 });
+  const galleryDragRef = useRef({ active: false, startX: 0, startY: 0, startScrollLeft: 0 });
   const [isGalleryDragging, setIsGalleryDragging] = useState(false);
   const t = messages[locale];
   const galleryItems = useMemo(
@@ -270,6 +270,7 @@ function App() {
             galleryDragRef.current = {
               active: true,
               startX: event.clientX,
+              startY: event.clientY,
               startScrollLeft: container.scrollLeft,
             };
             setIsGalleryDragging(true);
@@ -324,6 +325,54 @@ function App() {
           }}
           onBlur={() => {
             galleryPausedRef.current = false;
+          }}
+          onTouchStart={(event) => {
+            const container = galleryRef.current;
+            const touch = event.touches[0];
+            if (!container || !touch) {
+              return;
+            }
+
+            galleryPausedRef.current = true;
+            galleryDragRef.current = {
+              active: true,
+              startX: touch.clientX,
+              startY: touch.clientY,
+              startScrollLeft: container.scrollLeft,
+            };
+            setIsGalleryDragging(true);
+          }}
+          onTouchMove={(event) => {
+            const container = galleryRef.current;
+            const drag = galleryDragRef.current;
+            const touch = event.touches[0];
+            if (!container || !drag.active || !touch) {
+              return;
+            }
+
+            const deltaX = touch.clientX - drag.startX;
+            const deltaY = touch.clientY - drag.startY;
+            if (Math.abs(deltaX) > Math.abs(deltaY) && event.cancelable) {
+              event.preventDefault();
+            }
+
+            const loopWidth = container.scrollWidth / 2;
+            container.scrollLeft = drag.startScrollLeft - deltaX;
+
+            if (loopWidth > 0) {
+              if (container.scrollLeft < 0) {
+                container.scrollLeft += loopWidth;
+                drag.startScrollLeft += loopWidth;
+              } else if (container.scrollLeft >= loopWidth) {
+                container.scrollLeft -= loopWidth;
+                drag.startScrollLeft -= loopWidth;
+              }
+            }
+          }}
+          onTouchEnd={() => {
+            galleryDragRef.current.active = false;
+            galleryPausedRef.current = false;
+            setIsGalleryDragging(false);
           }}
         >
           <div className={styles.galleryTrack}>
