@@ -19,6 +19,9 @@ const githubIssuesUrl = isGitHubRepoConfigured
   ? `https://github.com/${links.githubIssuesRepo}/issues`
   : links.githubIssuesUrl;
 const mobileImageMediaQuery = '(max-width: 600px)';
+const initialGalleryBatchSize = 12;
+const galleryBatchSize = 8;
+const galleryBatchDelayMs = 650;
 
 function getMobileImage(image: string) {
   return image.replace(/^assets\/(game|gallery)\//, 'assets/mobile/$1/').replace(/\.png$/, '.webp');
@@ -61,6 +64,8 @@ function ResponsiveImage({ src, ...props }: ImgHTMLAttributes<HTMLImageElement> 
 function App() {
   const [locale, setLocale] = useState<Locale>(getStoredLocale);
   const [isMobileGallery, setIsMobileGallery] = useState(getIsMobileGallery);
+  const [isGalleryReady, setIsGalleryReady] = useState(false);
+  const [galleryVisibleCount, setGalleryVisibleCount] = useState(0);
   const commentsRef = useRef<HTMLDivElement | null>(null);
   const galleryRef = useRef<HTMLDivElement | null>(null);
   const galleryOffsetRef = useRef(0);
@@ -91,7 +96,11 @@ function App() {
     ],
     [t.gallery.items],
   );
-  const galleryMarqueeItems = useMemo(() => [...galleryItems, ...galleryItems], [galleryItems]);
+  const visibleGalleryItems = useMemo(
+    () => galleryItems.slice(0, galleryVisibleCount),
+    [galleryItems, galleryVisibleCount],
+  );
+  const galleryMarqueeItems = useMemo(() => [...visibleGalleryItems, ...visibleGalleryItems], [visibleGalleryItems]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(mobileImageMediaQuery);
@@ -104,18 +113,64 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const getGalleryImage = isMobileGallery ? getMobileImage : (image: string) => image;
+    if (!isGalleryReady) {
+      return;
+    }
 
-    galleryItems.forEach((item) => {
+    const getGalleryImage = isMobileGallery ? getMobileImage : (image: string) => image;
+    const visibleItems = galleryItems.slice(0, galleryVisibleCount);
+
+    visibleItems.forEach((item) => {
       const image = new Image();
       image.decoding = 'async';
       image.src = getGalleryImage(item.image);
     });
-  }, [galleryItems, isMobileGallery]);
+  }, [galleryItems, galleryVisibleCount, isGalleryReady, isMobileGallery]);
+
+  useEffect(() => {
+    if (!isGalleryReady) {
+      return;
+    }
+
+    setGalleryVisibleCount((count) => Math.max(count, Math.min(initialGalleryBatchSize, galleryItems.length)));
+  }, [galleryItems.length, isGalleryReady]);
+
+  useEffect(() => {
+    if (!isGalleryReady || galleryVisibleCount >= galleryItems.length) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setGalleryVisibleCount((count) => Math.min(count + galleryBatchSize, galleryItems.length));
+    }, galleryBatchDelayMs);
+
+    return () => window.clearTimeout(timeout);
+  }, [galleryItems.length, galleryVisibleCount, isGalleryReady]);
 
   useEffect(() => {
     const container = galleryRef.current;
-    if (!container) {
+    if (!container || isGalleryReady) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsGalleryReady(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '900px 0px' },
+    );
+
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, [isGalleryReady]);
+
+  useEffect(() => {
+    const container = galleryRef.current;
+    if (!container || !isGalleryReady) {
       return;
     }
 
@@ -147,7 +202,7 @@ function App() {
     animationFrame = window.requestAnimationFrame(tick);
 
     return () => window.cancelAnimationFrame(animationFrame);
-  }, [galleryMarqueeItems]);
+  }, [galleryMarqueeItems, isGalleryReady]);
 
   useEffect(() => {
     document.documentElement.lang = locale === 'zh' ? 'zh-CN' : locale;
@@ -215,7 +270,7 @@ function App() {
       </header>
 
       <section className={styles.hero} id="top">
-        <ResponsiveImage className={styles.heroImage} src={assets.hero} alt="" />
+        <ResponsiveImage className={styles.heroImage} src={assets.hero} alt="" fetchPriority="high" />
         <div className={styles.heroShade} />
         <div className={styles.heroContent}>
           <p className={styles.eyebrow}>{t.hero.eyebrow}</p>
@@ -249,7 +304,7 @@ function App() {
         <div className={styles.deckGrid}>
           {featuredCards.map((deck) => (
             <article className={styles.deckCard} key={deck.name}>
-              <ResponsiveImage src={deck.image} alt="" loading="lazy" />
+              <ResponsiveImage src={deck.image} alt="" loading="eager" fetchPriority="high" />
               <div>
                 <h3>{deck.name}</h3>
                 <p>{deck.text}</p>
@@ -268,16 +323,23 @@ function App() {
         <div className={styles.showcase}>
           <div className={styles.cardFan} aria-label={t.cards.labels[0]}>
             {assets.showcaseCards.map((card, index) => (
-              <ResponsiveImage key={card} src={card} alt="" style={{ '--offset': index } as CSSProperties} loading="lazy" />
+              <ResponsiveImage
+                key={card}
+                src={card}
+                alt=""
+                style={{ '--offset': index } as CSSProperties}
+                loading="eager"
+                fetchPriority="high"
+              />
             ))}
           </div>
           <div className={styles.relicShelf} aria-label={t.cards.labels[1]}>
             {assets.relics.map((relic) => (
-              <ResponsiveImage key={relic} src={relic} alt="" loading="lazy" />
+              <ResponsiveImage key={relic} src={relic} alt="" loading="eager" fetchPriority="high" />
             ))}
           </div>
           <figure className={styles.battlePreview}>
-            <ResponsiveImage src={assets.battle} alt="" loading="lazy" />
+            <ResponsiveImage src={assets.battle} alt="" loading="eager" fetchPriority="high" />
             <figcaption>{t.cards.labels[2]}</figcaption>
           </figure>
         </div>
@@ -398,12 +460,13 @@ function App() {
           }}
         >
           <div className={styles.galleryTrack}>
-            {galleryMarqueeItems.map((item, index) => (
-              <figure key={`${item.image}-${index}`} className={styles.galleryItem} data-kind={item.type}>
-                <ResponsiveImage src={item.image} alt="" loading="eager" decoding="async" draggable={false} />
-                <figcaption>{item.label}</figcaption>
-              </figure>
-            ))}
+            {isGalleryReady &&
+              galleryMarqueeItems.map((item, index) => (
+                <figure key={`${item.image}-${index}`} className={styles.galleryItem} data-kind={item.type}>
+                  <ResponsiveImage src={item.image} alt="" loading="lazy" decoding="async" draggable={false} />
+                  <figcaption>{item.label}</figcaption>
+                </figure>
+              ))}
           </div>
         </div>
       </section>
