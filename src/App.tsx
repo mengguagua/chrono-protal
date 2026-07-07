@@ -19,12 +19,17 @@ const githubIssuesUrl = isGitHubRepoConfigured
   ? `https://github.com/${links.githubIssuesRepo}/issues`
   : links.githubIssuesUrl;
 const mobileImageMediaQuery = '(max-width: 600px)';
+const desktopImageMediaQuery = '(min-width: 601px)';
 const initialGalleryBatchSize = 12;
 const galleryBatchSize = 8;
 const galleryBatchDelayMs = 650;
 
 function getMobileImage(image: string) {
   return image.replace(/^assets\/(game|gallery)\//, 'assets/mobile/$1/').replace(/\.png$/, '.webp');
+}
+
+function getDesktopImage(image: string) {
+  return image.replace(/^assets\/(game|gallery)\//, 'assets/desktop/$1/').replace(/\.png$/, '.webp');
 }
 
 function normalizeLoopOffset(value: number, loopWidth: number) {
@@ -56,6 +61,7 @@ function ResponsiveImage({ src, ...props }: ImgHTMLAttributes<HTMLImageElement> 
   return (
     <picture>
       <source media={mobileImageMediaQuery} srcSet={getMobileImage(src)} type="image/webp" />
+      <source media={desktopImageMediaQuery} srcSet={getDesktopImage(src)} type="image/webp" />
       <img {...props} src={src} />
     </picture>
   );
@@ -117,7 +123,7 @@ function App() {
       return;
     }
 
-    const getGalleryImage = isMobileGallery ? getMobileImage : (image: string) => image;
+    const getGalleryImage = isMobileGallery ? getMobileImage : getDesktopImage;
     const visibleItems = galleryItems.slice(0, galleryVisibleCount);
 
     visibleItems.forEach((item) => {
