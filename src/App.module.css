@@ -104,6 +104,7 @@
 }
 
 .heroImage,
+.hero picture,
 .heroShade {
   position: absolute;
   inset: 0;
@@ -115,6 +116,10 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+.hero picture {
+  z-index: -3;
 }
 
 .heroShade {
@@ -282,6 +287,12 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.deckCard picture {
+  display: block;
+  width: 6rem;
+  height: 8rem;
+}
+
 .deckCard h3 {
   margin: 0 0 0.45rem;
   color: #fff7e8;
@@ -338,6 +349,10 @@
   transform: rotate(calc((var(--offset) - 1.5) * 7deg));
 }
 
+.cardFan picture {
+  display: contents;
+}
+
 .relicShelf {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -355,6 +370,11 @@
   border-radius: 0.4rem;
 }
 
+.relicShelf picture {
+  display: block;
+  width: 100%;
+}
+
 .battlePreview {
   position: relative;
 }
@@ -363,6 +383,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.battlePreview picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .battlePreview figcaption,
@@ -397,6 +423,12 @@
   min-height: 18rem;
   max-height: 31rem;
   object-fit: cover;
+}
+
+.tunnelFeature picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .tunnelFeature {
@@ -657,6 +689,11 @@
   }
 
   .deckCard img {
+    width: 5rem;
+    height: 6.75rem;
+  }
+
+  .deckCard picture {
     width: 5rem;
     height: 6.75rem;
   }

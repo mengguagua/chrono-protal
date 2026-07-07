@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ImgHTMLAttributes } from 'react';
 import styles from './App.module.css';
 import {
   assets,
@@ -18,10 +18,10 @@ const isGitHubRepoConfigured = links.githubIssuesRepo.trim().length > 0;
 const githubIssuesUrl = isGitHubRepoConfigured
   ? `https://github.com/${links.githubIssuesRepo}/issues`
   : links.githubIssuesUrl;
-const mobileGalleryMediaQuery = '(max-width: 600px)';
+const mobileImageMediaQuery = '(max-width: 600px)';
 
-function getMobileGalleryImage(image: string) {
-  return image.replace('assets/gallery/', 'assets/gallery-mobile/');
+function getMobileImage(image: string) {
+  return image.replace(/^assets\/(game|gallery)\//, 'assets/mobile/$1/').replace(/\.png$/, '.webp');
 }
 
 function normalizeLoopOffset(value: number, loopWidth: number) {
@@ -46,7 +46,16 @@ function getIsMobileGallery() {
     return false;
   }
 
-  return window.matchMedia(mobileGalleryMediaQuery).matches;
+  return window.matchMedia(mobileImageMediaQuery).matches;
+}
+
+function ResponsiveImage({ src, ...props }: ImgHTMLAttributes<HTMLImageElement> & { src: string }) {
+  return (
+    <picture>
+      <source media={mobileImageMediaQuery} srcSet={getMobileImage(src)} type="image/webp" />
+      <img {...props} src={src} />
+    </picture>
+  );
 }
 
 function App() {
@@ -85,7 +94,7 @@ function App() {
   const galleryMarqueeItems = useMemo(() => [...galleryItems, ...galleryItems], [galleryItems]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia(mobileGalleryMediaQuery);
+    const mediaQuery = window.matchMedia(mobileImageMediaQuery);
     const handleChange = () => setIsMobileGallery(mediaQuery.matches);
 
     handleChange();
@@ -95,7 +104,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const getGalleryImage = isMobileGallery ? getMobileGalleryImage : (image: string) => image;
+    const getGalleryImage = isMobileGallery ? getMobileImage : (image: string) => image;
 
     galleryItems.forEach((item) => {
       const image = new Image();
@@ -206,7 +215,7 @@ function App() {
       </header>
 
       <section className={styles.hero} id="top">
-        <img className={styles.heroImage} src={assets.hero} alt="" />
+        <ResponsiveImage className={styles.heroImage} src={assets.hero} alt="" />
         <div className={styles.heroShade} />
         <div className={styles.heroContent}>
           <p className={styles.eyebrow}>{t.hero.eyebrow}</p>
@@ -240,7 +249,7 @@ function App() {
         <div className={styles.deckGrid}>
           {featuredCards.map((deck) => (
             <article className={styles.deckCard} key={deck.name}>
-              <img src={deck.image} alt="" loading="lazy" />
+              <ResponsiveImage src={deck.image} alt="" loading="lazy" />
               <div>
                 <h3>{deck.name}</h3>
                 <p>{deck.text}</p>
@@ -259,16 +268,16 @@ function App() {
         <div className={styles.showcase}>
           <div className={styles.cardFan} aria-label={t.cards.labels[0]}>
             {assets.showcaseCards.map((card, index) => (
-              <img key={card} src={card} alt="" style={{ '--offset': index } as React.CSSProperties} loading="lazy" />
+              <ResponsiveImage key={card} src={card} alt="" style={{ '--offset': index } as CSSProperties} loading="lazy" />
             ))}
           </div>
           <div className={styles.relicShelf} aria-label={t.cards.labels[1]}>
             {assets.relics.map((relic) => (
-              <img key={relic} src={relic} alt="" loading="lazy" />
+              <ResponsiveImage key={relic} src={relic} alt="" loading="lazy" />
             ))}
           </div>
           <figure className={styles.battlePreview}>
-            <img src={assets.battle} alt="" loading="lazy" />
+            <ResponsiveImage src={assets.battle} alt="" loading="lazy" />
             <figcaption>{t.cards.labels[2]}</figcaption>
           </figure>
         </div>
@@ -286,7 +295,7 @@ function App() {
           </div>
         </div>
         <figure className={styles.tunnelFeature}>
-          <img className={styles.storyImage} src={assets.tunnel} alt="" loading="lazy" />
+          <ResponsiveImage className={styles.storyImage} src={assets.tunnel} alt="" loading="lazy" />
           <figcaption>
             <strong>{t.story.tunnelTitle}</strong>
             <span>{t.story.tunnelBody}</span>
@@ -391,10 +400,7 @@ function App() {
           <div className={styles.galleryTrack}>
             {galleryMarqueeItems.map((item, index) => (
               <figure key={`${item.image}-${index}`} className={styles.galleryItem} data-kind={item.type}>
-                <picture>
-                  <source media={mobileGalleryMediaQuery} srcSet={getMobileGalleryImage(item.image)} />
-                  <img src={item.image} alt="" loading="eager" decoding="async" draggable={false} />
-                </picture>
+                <ResponsiveImage src={item.image} alt="" loading="eager" decoding="async" draggable={false} />
                 <figcaption>{item.label}</figcaption>
               </figure>
             ))}
