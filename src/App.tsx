@@ -51,7 +51,7 @@ function App() {
     script.setAttribute('repo', links.githubIssuesRepo);
     script.setAttribute('issue-term', 'pathname');
     script.setAttribute('label', 'visitor-feedback');
-    script.setAttribute('theme', 'github-dark-orange');
+    script.setAttribute('theme', 'github-dark');
 
     container.appendChild(script);
   }, [locale]);
