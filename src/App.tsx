@@ -19,6 +19,14 @@ const githubIssuesUrl = isGitHubRepoConfigured
   ? `https://github.com/${links.githubIssuesRepo}/issues`
   : links.githubIssuesUrl;
 
+function normalizeLoopOffset(value: number, loopWidth: number) {
+  if (loopWidth <= 0) {
+    return 0;
+  }
+
+  return ((value % loopWidth) + loopWidth) % loopWidth;
+}
+
 function getStoredLocale(): Locale {
   if (typeof window === 'undefined') {
     return defaultLocale;
@@ -32,8 +40,16 @@ function App() {
   const [locale, setLocale] = useState<Locale>(getStoredLocale);
   const commentsRef = useRef<HTMLDivElement | null>(null);
   const galleryRef = useRef<HTMLDivElement | null>(null);
+  const galleryOffsetRef = useRef(0);
   const galleryPausedRef = useRef(false);
-  const galleryDragRef = useRef({ active: false, startX: 0, startY: 0, startScrollLeft: 0 });
+  const galleryDragRef = useRef({
+    active: false,
+    pointerId: -1,
+    pointerType: '',
+    startX: 0,
+    startY: 0,
+    startOffset: 0,
+  });
   const [isGalleryDragging, setIsGalleryDragging] = useState(false);
   const t = messages[locale];
   const galleryItems = useMemo(
@@ -82,11 +98,12 @@ function App() {
 
       const loopWidth = container.scrollWidth / 2;
       if (!galleryPausedRef.current && loopWidth > 0) {
-        container.scrollLeft += (loopWidth / cycleSeconds) * deltaSeconds;
-
-        if (container.scrollLeft >= loopWidth) {
-          container.scrollLeft -= loopWidth;
-        }
+        const nextOffset = normalizeLoopOffset(
+          galleryOffsetRef.current + (loopWidth / cycleSeconds) * deltaSeconds,
+          loopWidth,
+        );
+        galleryOffsetRef.current = nextOffset;
+        container.scrollLeft = nextOffset;
       }
 
       animationFrame = window.requestAnimationFrame(tick);
@@ -262,16 +279,20 @@ function App() {
           aria-label={t.gallery.title}
           onPointerDown={(event) => {
             const container = galleryRef.current;
-            if (!container) {
+            if (!container || (event.pointerType === 'mouse' && event.button !== 0)) {
               return;
             }
 
+            const loopWidth = container.scrollWidth / 2;
+            galleryOffsetRef.current = normalizeLoopOffset(container.scrollLeft, loopWidth);
             galleryPausedRef.current = true;
             galleryDragRef.current = {
               active: true,
+              pointerId: event.pointerId,
+              pointerType: event.pointerType,
               startX: event.clientX,
               startY: event.clientY,
-              startScrollLeft: container.scrollLeft,
+              startOffset: galleryOffsetRef.current,
             };
             setIsGalleryDragging(true);
             event.currentTarget.setPointerCapture(event.pointerId);
@@ -279,39 +300,53 @@ function App() {
           onPointerMove={(event) => {
             const container = galleryRef.current;
             const drag = galleryDragRef.current;
-            if (!container || !drag.active) {
+            if (!container || !drag.active || drag.pointerId !== event.pointerId) {
               return;
             }
 
-            const loopWidth = container.scrollWidth / 2;
-            container.scrollLeft = drag.startScrollLeft - (event.clientX - drag.startX);
-
-            if (loopWidth > 0) {
-              if (container.scrollLeft < 0) {
-                container.scrollLeft += loopWidth;
-                drag.startScrollLeft += loopWidth;
-              } else if (container.scrollLeft >= loopWidth) {
-                container.scrollLeft -= loopWidth;
-                drag.startScrollLeft -= loopWidth;
-              }
+            const deltaX = event.clientX - drag.startX;
+            const deltaY = event.clientY - drag.startY;
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+              event.preventDefault();
             }
+
+            const loopWidth = container.scrollWidth / 2;
+            const nextOffset = normalizeLoopOffset(drag.startOffset - deltaX, loopWidth);
+            galleryOffsetRef.current = nextOffset;
+            container.scrollLeft = nextOffset;
           }}
           onPointerUp={(event) => {
+            const drag = galleryDragRef.current;
+            if (drag.pointerId !== event.pointerId) {
+              return;
+            }
+
             galleryDragRef.current.active = false;
+            galleryPausedRef.current = drag.pointerType === 'mouse';
             setIsGalleryDragging(false);
             if (event.currentTarget.hasPointerCapture(event.pointerId)) {
               event.currentTarget.releasePointerCapture(event.pointerId);
             }
           }}
-          onPointerCancel={() => {
+          onPointerCancel={(event) => {
+            if (galleryDragRef.current.pointerId !== event.pointerId) {
+              return;
+            }
+
             galleryDragRef.current.active = false;
             galleryPausedRef.current = false;
             setIsGalleryDragging(false);
           }}
-          onMouseEnter={() => {
-            galleryPausedRef.current = true;
+          onPointerEnter={(event) => {
+            if (event.pointerType === 'mouse') {
+              galleryPausedRef.current = true;
+            }
           }}
-          onMouseLeave={() => {
+          onPointerLeave={(event) => {
+            if (event.pointerType !== 'mouse') {
+              return;
+            }
+
             if (galleryDragRef.current.active) {
               return;
             }
@@ -325,54 +360,6 @@ function App() {
           }}
           onBlur={() => {
             galleryPausedRef.current = false;
-          }}
-          onTouchStart={(event) => {
-            const container = galleryRef.current;
-            const touch = event.touches[0];
-            if (!container || !touch) {
-              return;
-            }
-
-            galleryPausedRef.current = true;
-            galleryDragRef.current = {
-              active: true,
-              startX: touch.clientX,
-              startY: touch.clientY,
-              startScrollLeft: container.scrollLeft,
-            };
-            setIsGalleryDragging(true);
-          }}
-          onTouchMove={(event) => {
-            const container = galleryRef.current;
-            const drag = galleryDragRef.current;
-            const touch = event.touches[0];
-            if (!container || !drag.active || !touch) {
-              return;
-            }
-
-            const deltaX = touch.clientX - drag.startX;
-            const deltaY = touch.clientY - drag.startY;
-            if (Math.abs(deltaX) > Math.abs(deltaY) && event.cancelable) {
-              event.preventDefault();
-            }
-
-            const loopWidth = container.scrollWidth / 2;
-            container.scrollLeft = drag.startScrollLeft - deltaX;
-
-            if (loopWidth > 0) {
-              if (container.scrollLeft < 0) {
-                container.scrollLeft += loopWidth;
-                drag.startScrollLeft += loopWidth;
-              } else if (container.scrollLeft >= loopWidth) {
-                container.scrollLeft -= loopWidth;
-                drag.startScrollLeft -= loopWidth;
-              }
-            }
-          }}
-          onTouchEnd={() => {
-            galleryDragRef.current.active = false;
-            galleryPausedRef.current = false;
-            setIsGalleryDragging(false);
           }}
         >
           <div className={styles.galleryTrack}>
