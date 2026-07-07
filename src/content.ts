@@ -19,11 +19,19 @@ export const assets = {
   battleAlt: '/assets/game/battle-abg-8.png',
   cards: [
     '/assets/game/card-small-fireball.png',
-    '/assets/game/card-pursuit-poison.png',
     '/assets/game/card-resistance-shield.png',
     '/assets/game/card-blood-sacrifice.png',
     '/assets/game/card-capture-ball.png',
+    '/assets/game/card-venomous-spider.png',
+    '/assets/game/card-pursuit-bullet.png',
+    '/assets/game/card-dice-burst.png',
     '/assets/game/card-energy-surge.png',
+  ],
+  showcaseCards: [
+    '/assets/game/showcase-time-anchor.png',
+    '/assets/game/showcase-spacetime-echo.png',
+    '/assets/game/showcase-dimensional-shatter.png',
+    '/assets/game/showcase-chrono-stasis.png',
   ],
   relics: [
     '/assets/game/relic-recursive-poison.png',
@@ -34,7 +42,87 @@ export const assets = {
   monsters: [
     '/assets/game/monster-black-dog.png',
     '/assets/game/monster-four-barrel-tank.png',
+    '/assets/game/monster-diving-man.png',
+    '/assets/game/monster-bird.png',
+    '/assets/game/monster-spider.png',
   ],
+  gallery: {
+    scenes: [
+      '/assets/gallery/scenes/abg-1.png',
+      '/assets/gallery/scenes/abg-10.png',
+      '/assets/gallery/scenes/abg-2.png',
+      '/assets/gallery/scenes/abg-3.png',
+      '/assets/gallery/scenes/abg-4.png',
+      '/assets/gallery/scenes/abg-5.png',
+      '/assets/gallery/scenes/abg-6.png',
+      '/assets/gallery/scenes/abg-7.png',
+      '/assets/gallery/scenes/abg-8.png',
+      '/assets/gallery/scenes/abg-9.png',
+      '/assets/gallery/scenes/bg_default.png',
+      '/assets/gallery/scenes/black_market_bg.png',
+      '/assets/gallery/scenes/day_bg.png',
+      '/assets/gallery/scenes/day_bg_topdown_clean_v3_2848x1502.png',
+      '/assets/gallery/scenes/index-back-2.png',
+      '/assets/gallery/scenes/index-back.png',
+      '/assets/gallery/scenes/lab_bg.png',
+      '/assets/gallery/scenes/shop_bg.png',
+      '/assets/gallery/scenes/time-tunnel.png',
+    ],
+    monsters: [
+      '/assets/gallery/monsters/armored_turtle.png',
+      '/assets/gallery/monsters/bird.png',
+      '/assets/gallery/monsters/black_dog.png',
+      '/assets/gallery/monsters/boxing_kangaroo.png',
+      '/assets/gallery/monsters/coral_eyes.png',
+      '/assets/gallery/monsters/devourer.png',
+      '/assets/gallery/monsters/diving_man.png',
+      '/assets/gallery/monsters/fly_ant.png',
+      '/assets/gallery/monsters/four_barrel_tank.png',
+      '/assets/gallery/monsters/green_mouth.png',
+      '/assets/gallery/monsters/pink_car.png',
+      '/assets/gallery/monsters/poisonous_flower.png',
+      '/assets/gallery/monsters/self_destruct_bomb.png',
+      '/assets/gallery/monsters/ship_dragon.png',
+      '/assets/gallery/monsters/soundwave_bull.png',
+      '/assets/gallery/monsters/spider.png',
+      '/assets/gallery/monsters/stone_goblin.png',
+      '/assets/gallery/monsters/three_headed_mosquitoes.png',
+      '/assets/gallery/monsters/triceratops.png',
+      '/assets/gallery/monsters/vine.png',
+    ],
+    relics: [
+      '/assets/gallery/relics/relic_all_or_nothing.png',
+      '/assets/gallery/relics/relic_always_surplus.png',
+      '/assets/gallery/relics/relic_bald.png',
+      '/assets/gallery/relics/relic_berserk_flask.png',
+      '/assets/gallery/relics/relic_bonus_poison.png',
+      '/assets/gallery/relics/relic_complete_combustion.png',
+      '/assets/gallery/relics/relic_continuous_training.png',
+      '/assets/gallery/relics/relic_decode_dream.png',
+      '/assets/gallery/relics/relic_demon_contract.png',
+      '/assets/gallery/relics/relic_energy_furnace.png',
+      '/assets/gallery/relics/relic_enter_dream.png',
+      '/assets/gallery/relics/relic_feather.png',
+      '/assets/gallery/relics/relic_flawless_crystal.png',
+      '/assets/gallery/relics/relic_gamble.png',
+      '/assets/gallery/relics/relic_gamma_ray.png',
+      '/assets/gallery/relics/relic_gold_magnet.png',
+      '/assets/gallery/relics/relic_guardian.png',
+      '/assets/gallery/relics/relic_guardian_heart.png',
+      '/assets/gallery/relics/relic_late_bloomer.png',
+      '/assets/gallery/relics/relic_offense_defense.png',
+      '/assets/gallery/relics/relic_perfect_catch.png',
+      '/assets/gallery/relics/relic_quick_thrill.png',
+      '/assets/gallery/relics/relic_recursive_poison.png',
+      '/assets/gallery/relics/relic_scattered_gamma.png',
+      '/assets/gallery/relics/relic_self_harm_backstab.png',
+      '/assets/gallery/relics/relic_speed_boots.png',
+      '/assets/gallery/relics/relic_strong.png',
+      '/assets/gallery/relics/relic_unexpected.png',
+      '/assets/gallery/relics/relic_whetstone.png',
+      '/assets/gallery/relics/relic_zero_point.png',
+    ],
+  },
 } as const;
 
 export const localeLabels: Record<Locale, string> = {
@@ -54,7 +142,7 @@ export const messages = {
     },
     hero: {
       eyebrow: 'Roguelike Deckbuilder',
-      title: 'Chrono',
+      title: 'Reverse Chrono',
       subtitle:
         'Build different decks, survive brutal roguelike battles, and uncover a red-sand wasteland story one run at a time.',
       primaryCta: 'Wishlist',
@@ -66,7 +154,7 @@ export const messages = {
       eyebrow: 'Build Around Your Finds',
       title: 'Many decks, one harsh wasteland.',
       body:
-        'Each run pushes your deck toward a different identity. Stack damage-over-time, turn shields into offense, pay life for tempo, capture enemies as one-shot tools, or overcharge your energy engine.',
+        'Each run pushes your deck toward a different identity: stack damage-over-time, turn shields into offense, trade life for tempo, capture monsters into cards, fuse and strengthen monster cards, use follow-up attacks, link card effects through dice, or overcharge your energy engine.',
     },
     deckTypes: [
       {
@@ -83,15 +171,23 @@ export const messages = {
       },
       {
         name: 'Captured Monsters',
-        text: 'Turn dangerous enemies into limited-use cards that reshape reward choices.',
+        text: 'Capture enemies during battle, then turn them into monster cards for later rewards and routes.',
+      },
+      {
+        name: 'Monster Fusion',
+        text: 'Fuse captured monster cards into stronger variants with sharper roles and bigger payoffs.',
+      },
+      {
+        name: 'Follow-up Attacks',
+        text: 'Chain extra attacks from pursuit cards and turn one action into repeated pressure.',
+      },
+      {
+        name: 'Dice Links',
+        text: 'Connect card effects through dice results, making each roll reshape your tactical options.',
       },
       {
         name: 'Energy Burst',
         text: 'Stretch each turn with extra energy, cheaper cards, and overload payoffs.',
-      },
-      {
-        name: 'Adaptive Drafting',
-        text: 'Rewards respond to your deck profile, helping a run lean into its strongest plan.',
       },
     ],
     cards: {
@@ -107,11 +203,14 @@ export const messages = {
       body:
         'Kurt wakes without his memories and is marked by an old military clearance system as an unregistered driver. Tomorrow Station becomes his first shelter, but every clue points toward Chrono debt: a cost recorded in the future, waiting to return.',
       beats: ['Kurt, an amnesiac physicist', 'Tomorrow Station, a fragile shelter', 'Chrono debt, a story mystery'],
+      tunnelTitle: 'Time Tunnel',
+      tunnelBody:
+        'Cards sent into the Time Tunnel gain an extra effect, then trigger their own card effect on the next turn.',
     },
     gallery: {
       eyebrow: 'Gallery',
       title: 'Cards, monsters, and wasteland pressure.',
-      items: ['Main menu atmosphere', 'Battle backdrop', 'Captured threat', 'Chrono clue'],
+      items: ['Scene art', 'Adventure monster', 'Relic'],
     },
     cta: {
       title: 'Start with the deck. Follow the debt.',
@@ -122,7 +221,7 @@ export const messages = {
       eyebrow: 'Player Feedback',
       title: 'Leave suggestions through GitHub Issues.',
       body:
-        'Tell us which deck routes, card rewards, interface details, or story hooks you want to see improved. The comment area is powered by GitHub Issues, so every suggestion can be tracked publicly.',
+        'Tell us which deck routes, card rewards, interface details, or story hooks you want to see improved. The comment area is powered by GitHub Issues, so every suggestion can be tracked publicly. If you are interested in joining an internal playtest, leave a note and I will contact you privately. Thank you.',
       openIssues: 'Open GitHub Issues',
       helper: 'Sign in with GitHub to leave a comment. If the embedded thread is not configured yet, use the Issues button above.',
       unconfiguredTitle: 'GitHub Issues comments are ready to connect.',
@@ -140,18 +239,18 @@ export const messages = {
     },
     hero: {
       eyebrow: '肉鸽卡牌构筑',
-      title: 'Chrono',
+      title: 'Reverse Chrono',
       subtitle: '构筑不同卡组，在高压肉鸽战斗中活下去，并逐步揭开红沙废土中的故事。',
       primaryCta: '加入愿望单',
       secondaryCta: '试玩 Demo',
       tertiaryCta: '媒体资料',
-      stats: ['多路线卡组', '怪物捕捉卡', '红沙生存'],
+      stats: ['多方式卡组构建', '怪物捕捉卡', '怪物融合卡'],
     },
     gameplay: {
       eyebrow: '围绕奖励构筑',
       title: '多种卡组，一片残酷废土。',
       body:
-        '每一局都会把卡组推向不同方向：叠加持续伤害、把护盾转化为攻势、用生命换节奏、捕捉敌人作为一次性工具，或用能量爆发撑开回合上限。',
+        '每一局都会把卡组推向不同方向：叠加持续伤害、把护盾转化为攻势、用生命换节奏、捕捉获取怪物牌、融合强化怪物牌、使用追加攻击、通过骰子关联卡牌效果，或用能量爆发撑开回合上限。',
     },
     deckTypes: [
       {
@@ -168,15 +267,23 @@ export const messages = {
       },
       {
         name: '捕捉怪物',
-        text: '把危险敌人变成有限使用的卡牌，改变后续奖励选择。',
+        text: '在战斗中捕捉敌人，获取可加入后续构筑的怪物牌。',
+      },
+      {
+        name: '怪物融合',
+        text: '把怪物牌融合成更强形态，获得更明确的定位和更高收益。',
+      },
+      {
+        name: '追加攻击',
+        text: '用追击类卡牌连续触发额外攻击，把单次行动扩展成持续压力。',
+      },
+      {
+        name: '骰子关联',
+        text: '通过骰子结果关联卡牌效果，让每次投掷改变当回合选择。',
       },
       {
         name: '能量爆发',
         text: '通过额外能量、低费卡和过载收益拉长每个回合。',
-      },
-      {
-        name: '适应性选牌',
-        text: '奖励会参考当前卡组倾向，帮助每局强化自己的核心路线。',
       },
     ],
     cards: {
@@ -191,11 +298,13 @@ export const messages = {
       body:
         '失忆的库尔特被旧军方清算系统标记为“未登记驾驶员”。明日站是他的第一处庇护所，但越来越多线索指向克罗诺债务：一种登记在未来、终会回流的代价。',
       beats: ['库尔特，失忆物理学家', '明日站，脆弱据点', '克罗诺债务，叙事悬念'],
+      tunnelTitle: '时空隧道',
+      tunnelBody: '卡牌投入时空隧道会有额外效果，并且在下一回合触发卡牌自身效果。',
     },
     gallery: {
       eyebrow: '画廊',
       title: '卡牌、怪物和废土压力。',
-      items: ['主菜单氛围', '战斗背景', '可捕捉威胁', '克罗诺线索'],
+      items: ['场景图', '冒险中的怪物', '遗物'],
     },
     cta: {
       title: '从卡组开始，追索债务。',
@@ -205,7 +314,7 @@ export const messages = {
       eyebrow: '玩家建议',
       title: '通过 GitHub Issues 留下建议。',
       body:
-        '欢迎反馈你希望改进的卡组路线、卡牌奖励、界面细节或故事线索。留言区基于 GitHub Issues，建议可以被公开追踪。',
+        '欢迎反馈你希望改进的卡组路线、卡牌奖励、界面细节或故事线索。留言区基于 GitHub Issues，建议可以被公开追踪。有意内测试玩的朋友，请留言说明，我会私下联系，谢谢。',
       openIssues: '打开 GitHub Issues',
       helper: '登录 GitHub 后即可留言。如果内嵌留言区尚未配置，请先使用上方 Issues 按钮。',
       unconfiguredTitle: 'GitHub Issues 留言区已预留。',
@@ -223,7 +332,7 @@ export const messages = {
     },
     hero: {
       eyebrow: 'ローグライク・デッキビルダー',
-      title: 'Chrono',
+      title: 'Reverse Chrono',
       subtitle:
         '多彩なデッキを組み、過酷なローグライク戦闘を生き延び、赤い砂の荒野に隠された物語を少しずつ解き明かす。',
       primaryCta: 'ウィッシュリスト',
@@ -235,7 +344,7 @@ export const messages = {
       eyebrow: '報酬から構築する',
       title: 'いくつものデッキ、ひとつの過酷な荒野。',
       body:
-        'ランごとにデッキの姿は変わる。継続ダメージを重ねる、防御を攻撃へ変える、体力をテンポに変換する、敵を捕獲カードにする、あるいはエネルギーで一気に展開する。',
+        'ランごとにデッキは違う方向へ伸びる。継続ダメージを重ねる、防御を攻撃へ変える、体力をテンポに変換する、捕獲でモンスターカードを得る、モンスターカードを融合強化する、追撃を使う、ダイスでカード効果をつなぐ、あるいはエネルギーでターン上限を広げる。',
     },
     deckTypes: [
       {
@@ -252,15 +361,23 @@ export const messages = {
       },
       {
         name: '捕獲モンスター',
-        text: '危険な敵を限定カードに変え、報酬選択を変化させる。',
+        text: '戦闘中に敵を捕獲し、以後の構築に使えるモンスターカードを得る。',
+      },
+      {
+        name: 'モンスター融合',
+        text: 'モンスターカードを融合し、役割が明確でより強い形へ強化する。',
+      },
+      {
+        name: '追撃',
+        text: '追撃系カードで追加攻撃を連鎖させ、一度の行動を継続圧力へ変える。',
+      },
+      {
+        name: 'ダイス連携',
+        text: 'ダイス結果でカード効果をつなぎ、ロールごとにそのターンの選択を変える。',
       },
       {
         name: 'エネルギーバースト',
         text: '追加エネルギー、低コストカード、オーバーロードでターンを伸ばす。',
-      },
-      {
-        name: '適応ドラフト',
-        text: '報酬はデッキ傾向を参照し、ランの核をさらに強める。',
       },
     ],
     cards: {
@@ -276,11 +393,14 @@ export const messages = {
       body:
         '記憶を失ったカートは、旧軍の清算システムに未登録ドライバーとして記録される。明日ステーションは最初の避難所となるが、手がかりはやがてクロノ債務へ向かう。未来に記録され、いつか戻ってくる代償だ。',
       beats: ['カート、記憶喪失の物理学者', '明日ステーション、脆い避難所', 'クロノ債務、物語の謎'],
+      tunnelTitle: '時空トンネル',
+      tunnelBody:
+        'カードを時空トンネルへ投入すると追加効果が発生し、次のターンにそのカード自身の効果も発動する。',
     },
     gallery: {
       eyebrow: 'ギャラリー',
       title: 'カード、モンスター、荒野の圧力。',
-      items: ['メニューの空気感', '戦闘背景', '捕獲できる脅威', 'クロノの手がかり'],
+      items: ['シーンアート', '冒険中のモンスター', 'レリック'],
     },
     cta: {
       title: 'デッキから始まり、債務へ進む。',
@@ -291,7 +411,7 @@ export const messages = {
       eyebrow: 'プレイヤーフィードバック',
       title: 'GitHub Issuesで意見を送る。',
       body:
-        '改善してほしいデッキ方針、カード報酬、UI、物語の手がかりを教えてください。コメント欄はGitHub Issuesを使うため、提案を公開で追跡できます。',
+        '改善してほしいデッキ方針、カード報酬、UI、物語の手がかりを教えてください。コメント欄はGitHub Issuesを使うため、提案を公開で追跡できます。内部テストプレイに興味がある方はコメントでお知らせください。後ほど個別に連絡します。ありがとうございます。',
       openIssues: 'GitHub Issuesを開く',
       helper: 'GitHubにログインするとコメントできます。埋め込み欄が未設定の場合は、上のIssuesボタンを使ってください。',
       unconfiguredTitle: 'GitHub Issuesコメント欄を接続できます。',
@@ -327,6 +447,8 @@ export const messages = {
     title: string;
     body: string;
     beats: string[];
+    tunnelTitle: string;
+    tunnelBody: string;
   };
   gallery: {
     eyebrow: string;

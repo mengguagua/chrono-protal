@@ -385,25 +385,80 @@
   min-height: 18rem;
   max-height: 31rem;
   object-fit: cover;
+}
+
+.tunnelFeature {
+  margin: 0;
+}
+
+.tunnelFeature img {
   border: 1px solid rgba(241, 207, 136, 0.18);
   border-radius: 0.5rem;
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.3);
 }
 
-.galleryGrid {
+.tunnelFeature figcaption {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+  padding: 0.9rem 1rem;
+  color: rgba(243, 239, 230, 0.72);
+  line-height: 1.65;
+  background: rgba(20, 17, 13, 0.58);
+  border: 1px solid rgba(241, 207, 136, 0.16);
+  border-radius: 0.5rem;
+}
+
+.tunnelFeature strong {
+  color: #fff7e8;
+  font-size: 1.05rem;
+}
+
+.galleryViewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  scrollbar-width: none;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.galleryViewport::-webkit-scrollbar {
+  display: none;
+}
+
+.galleryDragging {
+  cursor: grabbing;
+}
+
+.galleryTrack {
+  display: flex;
+  flex-flow: column wrap;
+  align-content: flex-start;
+  width: max-content;
+  height: calc(16rem * 2 + 1rem);
   gap: 1rem;
 }
 
 .galleryItem {
   position: relative;
-  min-height: 18rem;
+  flex: 0 0 16rem;
+  width: clamp(14rem, 19vw, 18rem);
   margin: 0;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.055);
   border: 1px solid rgba(241, 207, 136, 0.15);
   border-radius: 0.5rem;
+}
+
+.galleryItem[data-kind='scene'] {
+  width: clamp(23rem, 32vw, 34rem);
+}
+
+.galleryItem[data-kind='relic'] {
+  width: clamp(11rem, 15vw, 14rem);
 }
 
 .galleryItem img {
@@ -412,10 +467,10 @@
   object-fit: cover;
 }
 
-.galleryItem:nth-child(3) img,
-.galleryItem:nth-child(4) img {
+.galleryItem[data-kind='monster'] img,
+.galleryItem[data-kind='relic'] img {
   object-fit: contain;
-  padding: 1rem;
+  padding: 1.2rem;
   background: radial-gradient(circle at center, rgba(240, 190, 95, 0.12), rgba(20, 17, 13, 0.92));
 }
 
@@ -509,7 +564,6 @@
 
   .deckGrid,
   .showcase,
-  .galleryGrid,
   .storySection {
     grid-template-columns: 1fr;
   }
@@ -522,10 +576,6 @@
   .relicShelf,
   .battlePreview {
     min-height: 20rem;
-  }
-
-  .galleryGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .cta,
@@ -583,11 +633,20 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .galleryGrid {
-    grid-template-columns: 1fr;
+  .galleryItem {
+    flex-basis: 13rem;
+    width: 12rem;
   }
 
-  .galleryItem {
-    min-height: 15rem;
+  .galleryItem[data-kind='scene'] {
+    width: 18rem;
+  }
+
+  .galleryItem[data-kind='relic'] {
+    width: 10rem;
+  }
+
+  .galleryTrack {
+    height: calc(13rem * 2 + 1rem);
   }
 }
