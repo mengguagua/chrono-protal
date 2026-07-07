@@ -18,6 +18,11 @@ const isGitHubRepoConfigured = links.githubIssuesRepo.trim().length > 0;
 const githubIssuesUrl = isGitHubRepoConfigured
   ? `https://github.com/${links.githubIssuesRepo}/issues`
   : links.githubIssuesUrl;
+const mobileGalleryMediaQuery = '(max-width: 600px)';
+
+function getMobileGalleryImage(image: string) {
+  return image.replace('assets/gallery/', 'assets/gallery-mobile/');
+}
 
 function normalizeLoopOffset(value: number, loopWidth: number) {
   if (loopWidth <= 0) {
@@ -36,8 +41,17 @@ function getStoredLocale(): Locale {
   return isLocale(stored) ? stored : defaultLocale;
 }
 
+function getIsMobileGallery() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  return window.matchMedia(mobileGalleryMediaQuery).matches;
+}
+
 function App() {
   const [locale, setLocale] = useState<Locale>(getStoredLocale);
+  const [isMobileGallery, setIsMobileGallery] = useState(getIsMobileGallery);
   const commentsRef = useRef<HTMLDivElement | null>(null);
   const galleryRef = useRef<HTMLDivElement | null>(null);
   const galleryOffsetRef = useRef(0);
@@ -71,12 +85,24 @@ function App() {
   const galleryMarqueeItems = useMemo(() => [...galleryItems, ...galleryItems], [galleryItems]);
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia(mobileGalleryMediaQuery);
+    const handleChange = () => setIsMobileGallery(mediaQuery.matches);
+
+    handleChange();
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  useEffect(() => {
+    const getGalleryImage = isMobileGallery ? getMobileGalleryImage : (image: string) => image;
+
     galleryItems.forEach((item) => {
       const image = new Image();
       image.decoding = 'async';
-      image.src = item.image;
+      image.src = getGalleryImage(item.image);
     });
-  }, [galleryItems]);
+  }, [galleryItems, isMobileGallery]);
 
   useEffect(() => {
     const container = galleryRef.current;
@@ -365,7 +391,10 @@ function App() {
           <div className={styles.galleryTrack}>
             {galleryMarqueeItems.map((item, index) => (
               <figure key={`${item.image}-${index}`} className={styles.galleryItem} data-kind={item.type}>
-                <img src={item.image} alt="" loading="eager" decoding="async" draggable={false} />
+                <picture>
+                  <source media={mobileGalleryMediaQuery} srcSet={getMobileGalleryImage(item.image)} />
+                  <img src={item.image} alt="" loading="eager" decoding="async" draggable={false} />
+                </picture>
                 <figcaption>{item.label}</figcaption>
               </figure>
             ))}
